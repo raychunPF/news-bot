@@ -1,0 +1,20 @@
+{
+  "name": "primalbot",
+  "version": "1.0.0",
+  "description": "Primal Bot using Primal's API and Microsoft Bot Framework",
+  "main": "app.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.3.0",
+    "chai": "^3.5.0",
+    "cheerio": "^0.22.0",
+    "konphyg": "^1.4.0",
+    "mocha": "^3.1.2",
+    "restify": "^4.1.1",
+    "restler": "^3.4.0"
+  }
+}
