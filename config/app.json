@@ -13,7 +13,6 @@
         "PARAMS": {
             "maxContentItems": 5
         }
-<<<<<<< HEAD
     },
     
     "INTERESTS_DATA": {
@@ -37,7 +36,5 @@
             "applyInfluence": true,
             "allowSubstitute": true
         }
-=======
->>>>>>> e0a1796d9f7ecafc2a929094a6cda047b5ace696
     }
 }

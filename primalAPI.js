@@ -36,9 +36,8 @@ primalAPI = rest.service(
             // http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript
             var queryStrings = JSON.parse(JSON.stringify(CONFIG.RECOMMENDATIONS.PARAMS));
             queryStrings[formattedMessage.type] = formattedMessage.message;
-            console.log(queryStrings);
-            // if(site)
-              // queryStrings['site'] = site;
+            if(site)
+              queryStrings['site'] = site;
             
             this.get(CONFIG.RECOMMENDATIONS.URL, {"query": queryStrings}).on("success", function(data, response) {
                 var cards = [];
