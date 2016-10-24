@@ -39,7 +39,6 @@ server.post('/api/messages', connector.listen());
 //=========================================================
 
 bot.beginDialogAction('start query', '/action', { matches: /^primalbot/i });
-bot.beginDialogAction('params', '/params', { matches: /^parameters|params/i });
 
 //=========================================================
 // Bots Dialogs
