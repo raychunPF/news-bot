@@ -15,6 +15,18 @@
         }
     },
     
+    "INTERESTS_DATA": {
+        "URL": "https://api.primal.com/v2/data",
+        "PARAMS": {
+        }
+    },
+    
+    "EXTRACTION": {
+        "URL": "https://api.primal.com/v2/extraction",
+        "PARAMS": {
+        }
+    },
+    
     "TEST_SITE_LIST": [
         "allrecipes.com"
     ],

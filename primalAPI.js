@@ -33,8 +33,7 @@ primalAPI = rest.service(
          */
         recommendations: function(message, site, onSuccess, onFail) {
             var formattedMessage = _formatMessage(message);
-            // As hacky as this code looks, according to http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript
-            // it is the most efficient method somehow
+            // http://stackoverflow.com/questions/122102/what-is-the-most-efficient-way-to-deep-clone-an-object-in-javascript
             var queryStrings = JSON.parse(JSON.stringify(CONFIG.RECOMMENDATIONS.PARAMS));
             queryStrings[formattedMessage.type] = formattedMessage.message;
             if(site)
@@ -54,7 +53,49 @@ primalAPI = rest.service(
             }).on("error", function(data, response) {
                 onFail(response.rawEncoded);
             });
-        }
+        },
+        
+        /**
+         * Api call to primal consumer interests data
+         *
+         * @param {string} message The message to query for interests data
+         * @param {function} onSuccess The function to call on success
+         * @param {function} onFail The function to call on fail
+         */
+        interestsData: function(message, onSuccess, onFail) {
+            var formattedMessage = _formatMessage(message);
+            var queryStrings = JSON.parse(JSON.stringify(CONFIG.INTERESTS_DATA.PARAMS));
+            queryStrings[formattedMessage.type] = formattedMessage.message;
+            
+            this.get(CONFIG.INTERESTS_DATA.URL, {"query": queryStrings}).on("success", function(data, response) {
+                onSuccess(data);
+            }).on("fail", function(data, response) {
+                onFail(response.rawEncoded);
+            }).on("error", function(data, response) {
+                onFail(response.rawEncoded);
+            });
+        },
+        
+        /**
+         * Api call to primal extraction
+         *
+         * @param {string} message The message to query for interests data
+         * @param {function} onSuccess The function to call on success
+         * @param {function} onFail The function to call on fail
+         */
+        extraction: function(message, onSuccess, onFail) {
+            var formattedMessage = _formatMessage(message);
+            var queryStrings = JSON.parse(JSON.stringify(CONFIG.EXTRACTION.PARAMS));
+            queryStrings[formattedMessage.type] = formattedMessage.message;
+            
+            this.get(CONFIG.EXTRACTION.URL, {"query": queryStrings}).on("success", function(data, response) {
+                onSuccess(data);
+            }).on("fail", function(data, response) {
+                onFail(response.rawEncoded);
+            }).on("error", function(data, response) {
+                onFail(response.rawEncoded);
+            });
+        },
     }
 );
 
