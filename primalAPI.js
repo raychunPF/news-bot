@@ -47,10 +47,9 @@ primalAPI = rest.service(
                         cards.push(item);
                     }
                 }
+                console.log("Success");
                 onSuccess(cards);
             }).on("fail", function(data, response) {
-                onFail(response.rawEncoded);
-            }).on("error", function(data, response) {
                 onFail(response.rawEncoded);
             });
         },
@@ -71,15 +70,13 @@ primalAPI = rest.service(
                 onSuccess(data);
             }).on("fail", function(data, response) {
                 onFail(response.rawEncoded);
-            }).on("error", function(data, response) {
-                onFail(response.rawEncoded);
             });
         },
         
         /**
          * Api call to primal extraction
          *
-         * @param {string} message The message to query for interests data
+         * @param {string} message The message to query for extraction
          * @param {function} onSuccess The function to call on success
          * @param {function} onFail The function to call on fail
          */
@@ -92,10 +89,8 @@ primalAPI = rest.service(
                 onSuccess(data);
             }).on("fail", function(data, response) {
                 onFail(response.rawEncoded);
-            }).on("error", function(data, response) {
-                onFail(response.rawEncoded);
             });
-        },
+        }
     }
 );
 
