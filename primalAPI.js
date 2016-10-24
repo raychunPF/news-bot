@@ -37,8 +37,9 @@ primalAPI = rest.service(
             // it is the most efficient method somehow
             var queryStrings = JSON.parse(JSON.stringify(CONFIG.RECOMMENDATIONS.PARAMS));
             queryStrings[formattedMessage.type] = formattedMessage.message;
-            if(site)
-              queryStrings['site'] = site;
+            console.log(queryStrings);
+            // if(site)
+              // queryStrings['site'] = site;
             
             this.get(CONFIG.RECOMMENDATIONS.URL, {"query": queryStrings}).on("success", function(data, response) {
                 var cards = [];
@@ -48,6 +49,7 @@ primalAPI = rest.service(
                         cards.push(item);
                     }
                 }
+                console.log("Success");
                 onSuccess(cards);
             }).on("fail", function(data, response) {
                 onFail(response.rawEncoded);
