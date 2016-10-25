@@ -77,15 +77,16 @@ primalAPI = rest.service(
          * Api call to primal extraction
          *
          * @param {string} message The message to query for extraction
+         * @param {object} params The parameters for the extraction api call
          * @param {function} onSuccess The function to call on success
          * @param {function} onFail The function to call on fail
          */
-        extraction: function(message, onSuccess, onFail) {
+        extraction: function(message, params, onSuccess, onFail) {
             var formattedMessage = _formatMessage(message);
-            var queryStrings = JSON.parse(JSON.stringify(CONFIG.EXTRACTION.PARAMS));
-            queryStrings[formattedMessage.type] = formattedMessage.message;
+            _stripEmptyProperties(params);
+            params[formattedMessage.type] = formattedMessage.message;
             
-            this.get(CONFIG.EXTRACTION.URL, {"query": queryStrings}).on("success", function(data, response) {
+            this.get(CONFIG.EXTRACTION.URL, {"query": params}).on("success", function(data, response) {
                 onSuccess(data);
             }).on("fail", function(data, response) {
                 onFail(response.rawEncoded);
@@ -107,6 +108,14 @@ function _formatMessage(message) {
         return { "message": encodeURI(message), "type": "u" };
     } else {
         return { "message": message.split(' ').join('+'), "type": "q" };
+    }
+}
+
+function _stripEmptyProperties(params) {
+    for (var prop in params) {
+        if (params.hasOwnProperty(prop) && params[prop] === '') {
+            delete params[prop];
+        }
     }
 }
 

@@ -20,22 +20,31 @@ exports.isUrl = function(url) {
 }
 
 /**
- * Builds an array of questions with prompts for the user about parameters
+ * Builds the param object using default values
  *
- * @param {string} apiName The api name we build prompts for
- * @return {array} prompts An array full of prompt objects with properties field and prompt
+ * @param {object} params
+ * @param {object} defaultParams 
  */
-exports.createPrompts = function(apiName) {
-    console.log("ATTEMPTING TO CREATE PROMPTS");
-    var prompts = [];
-    var parameters = CONFIG[apiName].PARAMS;
-    console.log(parameters);
-    for (var key in parameters) {
-        if (parameters.hasOwnProperty(key)) {
-            var prompt = { field: key, prompt: ""}
-            prompts.push(prompt);
+exports.buildparams = function(params, defaultParams) {
+    for (var key in defaultParams) {
+        if (defaultParams.hasOwnProperty(key)) {
+            params[key] = defaultParams[key];
         }
     }
+}
+
+/**
+ * Sets the api properties
+ *
+ * @param {object} session The session we want to set conversation data 
+ */
+exports.setApiProperties = function(session) {
+    // Set recommendations parameters
     
-    return prompts;
+    // Set interests data parameters
+    session.userData.interestsData = JSON.parse(JSON.stringify(CONFIG.INTERESTS_DATA.PARAMS));
+    // Set extraction parameters
+    session.userData.extraction = JSON.parse(JSON.stringify(CONFIG.EXTRACTION.PARAMS));
+    
+    session.userData.apiPropertiesSet = true;
 }

@@ -8,6 +8,7 @@ var builder = require('botbuilder');
 var PrimalAPI = require('./primalAPI.js').primalAPI
 var scraper = require('./utils/imageScraper.js');
 var general = require("./utils/general.js");
+var jsonld = require('jsonld');
 
 // =========================================================
 // Static Variables
@@ -44,9 +45,19 @@ bot.beginDialogAction('start query', '/action', { matches: /^primalbot/i });
 // Bots Dialogs
 //=========================================================
 bot.dialog('/',
-    function(session) {
-        if( /^primalbot/i.test(session.message.text)) { session.beginDialog('/action'); }
-        // else session.send("Sorry, I didn't understand the command!");
+    function (session) {
+        // Make sure api properties (eg parameters) are set before calling any of the apis
+        if (!session.userData.apiPropertiesSet) {
+            general.setApiProperties(session);
+        }
+        
+        if (/^extract/i.test(session.message.text)) {
+            session.beginDialog('/extract');
+        } else if (/^primalbot/i.test(session.message.text)) { 
+            session.beginDialog('/action'); 
+        } else {
+            session.send("Sorry, I didn't understand the command!");
+        }
     }
 );
 
@@ -57,13 +68,14 @@ bot.dialog("/action", [
         session.sendTyping();
         PrimalAPI.recommendations(query, null, function(content) {
             session.beginDialog("/respondWithContent", content);
-        }, function(message) { console.log(message);} );
+        }, function(errorMessage) { 
+            console.log(errorMessage);
+        });
     }
 ]);
 
 bot.dialog('/respondWithContent', [
     function(session, results) {
-        console.log(results);
         scraper.addPreviewImages(results, function(content) {
             var prettyCards = [];
             for (var i = 0; i < content.length; i++) {
@@ -86,11 +98,21 @@ bot.dialog('/respondWithContent', [
     }
 ]);
 
-bot.dialog("/params", [
-    function(session, args) {
-        session.dialogData.index = args ? args.index : 0;
-        session.dialogData.form = args ? args.form : {};
+bot.dialog('/extract', [
+    function (session) {
+        builder.Prompts.text(session, 'Give me text or a url of the page you want me to extract topics from');
+    }, 
+    function (session, results) {
+        session.sendTyping();
+        var params = {};
+        general.buildparams(params, session.userData.extraction);
         
-        builder.Prompts.text
+        PrimalAPI.extraction(results.response, params, function(extractedTopics) {
+            console.log(extractedTopics);
+            session.endDialog("Successfully extracted");
+        }, function(errorMessage) {
+            console.log(errorMessage);
+            session.endDialog("Unsuccessfully extracted");
+        })
     }
 ]);
