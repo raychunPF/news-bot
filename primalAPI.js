@@ -1,7 +1,7 @@
 // =========================================================
 // Imports
 // =========================================================
-var utils = require("./utils/general.js");
+var generalUtils = require("./utils/general.js");
 var rest = require("restler");
 
 // =========================================================
@@ -63,7 +63,7 @@ primalAPI = rest.service(
          */
         interestsData: function(message, params, onSuccess, onFail) {
             var formattedMessage = _formatMessage(message);
-            _stripEmptyProperties(params);
+            generalUtils.stripEmptyProperties(params);
             params[formattedMessage.type] = formattedMessage.message;
 
             this.get(CONFIG.EXTRACTION.URL, {"query": params}).on("success", function(data, response) {
@@ -83,7 +83,7 @@ primalAPI = rest.service(
          */
         extraction: function(message, params, onSuccess, onFail) {
             var formattedMessage = _formatMessage(message);
-            _stripEmptyProperties(params);
+            generalUtils.stripEmptyProperties(params);
             params[formattedMessage.type] = formattedMessage.message;
 
             this.get(CONFIG.EXTRACTION.URL, {"query": params}).on("success", function(data, response) {
@@ -104,23 +104,10 @@ primalAPI = rest.service(
  */
 function _formatMessage(message) {
     // Check if url, else the message is a query
-    if (utils.isUrl(message)) {
+    if (generalUtils.isUrl(message)) {
         return { "message": encodeURI(message), "type": "u" };
     } else {
         return { "message": message.split(' ').join('+'), "type": "q" };
-    }
-}
-
-/**
- * Strips any properties off of parameters if they are empty
- *
- * @param {object} params The object to remove properties from
- */
-function _stripEmptyProperties(params) {
-    for (var prop in params) {
-        if (params.hasOwnProperty(prop) && params[prop] === '') {
-            delete params[prop];
-        }
     }
 }
 

@@ -55,6 +55,10 @@ bot.dialog('/',
             session.beginDialog('/extract');
         } else if (/^primalbot/i.test(session.message.text)) {
             session.beginDialog('/action');
+        } else if (/^params/i.test(session.message.text)) {
+            session.beginDialog('/updateParameters');
+        } else if (/^reset/i.test(session.message.text)) {
+            session.beginDialog("/reset");
         } else {
             session.send("Sorry, I didn't understand the command!");
         }
@@ -94,7 +98,9 @@ bot.dialog('/respondWithContent', [
                 .attachments(prettyCards);
 
             session.endDialog(msg);
-        }, function() {console.log("err"); });
+        }, function(errorMessage) {
+            console.log(errorMessage);
+        });
     }
 ]);
 
@@ -104,10 +110,9 @@ bot.dialog('/extract', [
     },
     function (session, results) {
         session.sendTyping();
-        var params = general.buildparams(session.userData.extraction);
+        var params = general.copyObject(session.userData.extraction);
 
         primalAPI.extraction(results.response, params, function(extractedTopics) {
-            console.log(extractedTopics);
             jsonld.expand(extractedTopics, function(errE, expanded) {
                 if (errE) {
                     session.endDialog("Error expanding");
@@ -129,6 +134,58 @@ bot.dialog('/extract', [
     }
 ]);
 
-bot.dialog('chooseParameters', [
+var api = {
+    "recommendations": { value: "recommendations", params: "RECOMMENDATIONS" },
+    "interests data": { value: "interestsData", params: "INTERESTS_DATA" },
+    "extraction": { value: "recommendations", params: "EXTRACTION" }
+}
 
+bot.dialog("/updateParameters", [
+    function (session) {
+        builder.Prompts.choice(session, "Which api parameters do you want to change?", api);
+    },
+    function (session, results) {
+        if (results.response) {
+            session.dialogData["api"] = api[results.response.entity].value;
+            var apiParams = api[results.response.entity].params;
+            apiParams = JSON.parse(JSON.stringify(CONFIG[apiParams].PARAMS));
+            builder.Prompts.choice(session, "Which parameter do you want to change", apiParams);
+        } else {
+            session.endDialog("Error: No api choice found");
+        }
+    },
+    function(session, results) {
+        if (results.response) {
+            session.dialogData["param"] = results.response.entity;
+            builder.Prompts.text(session, "Enter a value for " + results.response.entity + ":");
+        } else {
+            session.endDialog("Error: No parameter choice found");
+        }
+    },
+    function (session, results) {
+        if (results.response) {
+            var paramValue;
+            // Account for url inputs
+            if (/<([^>|\|]+)/g.test(results.response)) {
+                paramValue = results.response.match(/[^<>|\s]+/g)[0];
+            } else {
+                paramValue = results.response;
+            }
+            var apiName = session.dialogData["api"];
+            var paramName = session.dialogData["param"]
+            session.userData[apiName][paramName] = paramValue;
+            session.endDialog("All done! %s for %s has been updated to %s", paramName, apiName, paramValue);
+        } else {
+            session.endDialog("Error: No Value found");
+        }
+    }
+]);
+
+bot.dialog("/reset", [
+    function (session) {
+        for (var key in session.userData) {
+            delete session.userData[key];
+        }
+        session.endConversation("Reset - userData and privateConversationData cleared");
+    }
 ]);
