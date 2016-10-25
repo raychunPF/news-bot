@@ -5,7 +5,7 @@ var konphyg = require('konphyg')(__dirname + '/config');
 global.config = konphyg('app');
 var restify = require('restify');
 var builder = require('botbuilder');
-var PrimalAPI = require('./primalAPI.js').primalAPI
+var primalAPI = require('./primalAPI.js').primalAPI
 var scraper = require('./utils/imageScraper.js');
 var general = require("./utils/general.js");
 var jsonld = require('jsonld');
@@ -66,7 +66,7 @@ bot.dialog("/action", [
         var query = session.message.text.substr(session.message.text.indexOf(' ')+1);
         session.send("Hey I heard you ask for stuff about: %s", query);
         session.sendTyping();
-        PrimalAPI.recommendations(query, null, function(content) {
+        primalAPI.recommendations(query, null, function(content) {
             session.beginDialog("/respondWithContent", content);
         }, function(errorMessage) {
             console.log(errorMessage);
@@ -106,7 +106,7 @@ bot.dialog('/extract', [
         session.sendTyping();
         var params = general.buildparams(session.userData.extraction);
 
-        PrimalAPI.extraction(results.response, params, function(extractedTopics) {
+        primalAPI.extraction(results.response, params, function(extractedTopics) {
             console.log(extractedTopics);
             jsonld.expand(extractedTopics, function(errE, expanded) {
                 if (errE) {

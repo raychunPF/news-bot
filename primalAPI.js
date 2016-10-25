@@ -47,7 +47,6 @@ primalAPI = rest.service(
                         cards.push(item);
                     }
                 }
-                console.log("Success");
                 onSuccess(cards);
             }).on("fail", function(data, response) {
                 onFail(response.rawEncoded);
