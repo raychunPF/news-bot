@@ -94,7 +94,9 @@ bot.dialog('/respondWithContent', [
                 .attachments(prettyCards);
 
             session.endDialog(msg);
-        }, function() {console.log("err"); });
+        }, function(errorMessage) {
+            console.log(errorMessage);
+        });
     }
 ]);
 
@@ -104,10 +106,9 @@ bot.dialog('/extract', [
     },
     function (session, results) {
         session.sendTyping();
-        var params = general.buildparams(session.userData.extraction);
+        var params = general.copyObject(session.userData.extraction);
 
         primalAPI.extraction(results.response, params, function(extractedTopics) {
-            console.log(extractedTopics);
             jsonld.expand(extractedTopics, function(errE, expanded) {
                 if (errE) {
                     session.endDialog("Error expanding");

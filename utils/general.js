@@ -3,9 +3,6 @@
 // =========================================================
 var CONFIG = global.config;
 
-// =========================================================
-// General utility methods
-// =========================================================
 /**
  * Checks if the string is a url
  *
@@ -20,24 +17,24 @@ exports.isUrl = function(url) {
 }
 
 /**
- * Sets the parameter object values using the values that the user set
+ * Makes a copy of an object
  *
- * @param {object} userParams The users parameter setting
- * @return {object} params The parameter object that will be used in api calls
+ * @param {object} object The object to copy
+ * @return {object} copy The copied object with the same properties
  */
-exports.buildparams = function(userParams) {
-    var params = {};
-    for (var key in userParams) {
-        if (userParams.hasOwnProperty(key)) {
-            params[key] = userParams[key];
+exports.copyObject = function(object) {
+    var copy = {};
+    for (var key in object) {
+        if (object.hasOwnProperty(key)) {
+            copy[key] = object[key];
         }
     }
 
-    return params;
+    return copy;
 }
 
 /**
- * Sets the api parameter properties
+ * Sets the api parameter properties in the user data
  *
  * @param {object} session The session where we want to set the user data
  */

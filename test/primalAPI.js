@@ -4,7 +4,6 @@
 var testHome = "../test";
 require(testHome + "/test-setup");
 var primalAPI = require("../primalAPI.js").primalAPI;
-var general = require("./../utils/general.js");
 
 // =========================================================
 // Static Variables
@@ -37,7 +36,7 @@ describe("Primal Service API", function() {
     });
 
     describe("Extraction api", function() {
-        var params = general.buildparams(JSON.parse(JSON.stringify(CONFIG.EXTRACTION.PARAMS)));
+        var params = JSON.parse(JSON.stringify(CONFIG.EXTRACTION.PARAMS));
         this.slow(1000);
         var url = "http://stackoverflow.com/";
         var query = "buddy is a dog";
