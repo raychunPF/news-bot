@@ -53,7 +53,7 @@ exports.stripEmptyProperties = function(object) {
  */
 exports.setApiProperties = function(session) {
     // Set recommendations parameters
-    session.userData.recommendations = JSON.parse(JSON.stringify(CONFIG.INTERESTS_DATA.PARAMS));
+    session.userData.recommendations = JSON.parse(JSON.stringify(CONFIG.RECOMMENDATIONS.PARAMS));
     // Set interests data parameters
     session.userData.interestsData = JSON.parse(JSON.stringify(CONFIG.INTERESTS_DATA.PARAMS));
     // Set extraction parameters
