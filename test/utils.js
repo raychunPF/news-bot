@@ -3,7 +3,7 @@
 // =========================================================
 var testHome = "../test";
 require(testHome + "/test-setup");
-var general = require("../utils/general.js");
+var generalUtils = require("../utils/general.js");
 
 // =========================================================
 // Static Variables
@@ -14,7 +14,7 @@ describe("Primal Utility Methods", function() {
         it("should indicate if url", function() {
             var url = "http://stackoverflow.com/";
 
-            general.isUrl(url).should.be.true;
+            generalUtils.isUrl(url).should.be.true;
         });
 
         it("should copy an object", function() {
@@ -23,13 +23,20 @@ describe("Primal Utility Methods", function() {
                 "prop2": "two"
             };
 
-            var copy = general.copyObject(object);
+            var copy = generalUtils.copyObject(object);
             copy.should.have.property("prop1", "one");
             copy.should.have.property("prop2", "two");
         });
 
-        it("should set initial parameters", function() {
+        it("should strip empty properties off an object", function() {
+            var object = {
+                "prop1": "one",
+                "prop2": ""
+            };
 
+            generalUtils.stripEmptyProperties(object);
+            object.should.have.property("prop1", "one");
+            object.should.not.have.property("prop2");
         });
     });
 });

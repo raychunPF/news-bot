@@ -34,6 +34,19 @@ exports.copyObject = function(object) {
 }
 
 /**
+ * Strips any properties off an object if they are empty
+ *
+ * @param {object} object The object to remove properties from
+ */
+exports.stripEmptyProperties = function(object) {
+    for (var prop in object) {
+        if (object.hasOwnProperty(prop) && object[prop] === '') {
+            delete object[prop];
+        }
+    }
+}
+
+/**
  * Sets the api parameter properties in the user data
  *
  * @param {object} session The session where we want to set the user data
