@@ -13,5 +13,28 @@
         "PARAMS": {
             "maxContentItems": 5
         }
+    },
+    
+    "INTERESTS_DATA": {
+        "URL": "https://api.primal.com/v2/data",
+        "PARAMS": {
+            "type": "",
+            "contentSource": "",
+            "contentCollection": "",
+            "site": "",
+            "uid": "",
+            "applyInfluence": true
+        }
+    },
+    
+    "EXTRACTION": {
+        "URL": "https://api.primal.com/v2/extraction",
+        "PARAMS": {
+            "minTopicScore": "",
+            "allowComplexTopics": true,
+            "cache": "",
+            "applyInfluence": true,
+            "allowSubstitute": true
+        }
     }
 }

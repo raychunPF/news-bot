@@ -7,6 +7,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var PrimalAPI = require('./primalAPI.js').primalAPI
 var scraper = require('./utils/imageScraper.js');
+var general = require("./utils/general.js");
 
 // =========================================================
 // Static Variables
@@ -28,7 +29,6 @@ var connector = new builder.ChatConnector({
     appId: config.MICROSOFT_APP_ID,
     appPassword: config.MICROSOFT_APP_PASSWORD
 });
-
 
 var bot = new builder.UniversalBot(connector);
 
@@ -83,5 +83,14 @@ bot.dialog('/respondWithContent', [
             
             session.endDialog(msg);
         }, function() {console.log("err"); });
+    }
+]);
+
+bot.dialog("/params", [
+    function(session, args) {
+        session.dialogData.index = args ? args.index : 0;
+        session.dialogData.form = args ? args.form : {};
+        
+        builder.Prompts.text
     }
 ]);
