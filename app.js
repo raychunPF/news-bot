@@ -24,7 +24,7 @@ var server = restify.createServer();
 server.listen(process.env.port || process.env.PORT || 3978, function () {
    console.log('%s listening to %s', server.name, server.url);
 });
-  
+
 // For Bot Framework Service
 var connector = new builder.ChatConnector({
     appId: config.MICROSOFT_APP_ID,
@@ -50,11 +50,11 @@ bot.dialog('/',
         if (!session.userData.apiPropertiesSet) {
             general.setApiProperties(session);
         }
-        
+
         if (/^extract/i.test(session.message.text)) {
             session.beginDialog('/extract');
-        } else if (/^primalbot/i.test(session.message.text)) { 
-            session.beginDialog('/action'); 
+        } else if (/^primalbot/i.test(session.message.text)) {
+            session.beginDialog('/action');
         } else {
             session.send("Sorry, I didn't understand the command!");
         }
@@ -68,7 +68,7 @@ bot.dialog("/action", [
         session.sendTyping();
         PrimalAPI.recommendations(query, null, function(content) {
             session.beginDialog("/respondWithContent", content);
-        }, function(errorMessage) { 
+        }, function(errorMessage) {
             console.log(errorMessage);
         });
     }
@@ -92,7 +92,7 @@ bot.dialog('/respondWithContent', [
             var msg = new builder.Message(session)
                 .attachmentLayout(builder.AttachmentLayout.list)
                 .attachments(prettyCards);
-            
+
             session.endDialog(msg);
         }, function() {console.log("err"); });
     }
@@ -101,18 +101,34 @@ bot.dialog('/respondWithContent', [
 bot.dialog('/extract', [
     function (session) {
         builder.Prompts.text(session, 'Give me text or a url of the page you want me to extract topics from');
-    }, 
+    },
     function (session, results) {
         session.sendTyping();
-        var params = {};
-        general.buildparams(params, session.userData.extraction);
-        
+        var params = general.buildparams(session.userData.extraction);
+
         PrimalAPI.extraction(results.response, params, function(extractedTopics) {
             console.log(extractedTopics);
-            session.endDialog("Successfully extracted");
+            jsonld.expand(extractedTopics, function(errE, expanded) {
+                if (errE) {
+                    session.endDialog("Error expanding");
+                } else {
+                    jsonld.compact(expanded, extractedTopics['@context'], function(errC, compacted) {
+                        if (errC) {
+                            session.endDialog("Error compacting");
+                        } else {
+                            console.log(JSON.stringify(compacted, null, 2));
+                            session.endDialog("Successfully extracted");
+                        }
+                    });
+                }
+            });
         }, function(errorMessage) {
             console.log(errorMessage);
             session.endDialog("Unsuccessfully extracted");
         })
     }
+]);
+
+bot.dialog('chooseParameters', [
+
 ]);

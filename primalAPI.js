@@ -15,7 +15,7 @@ primalAPI = rest.service(
     },
     {
         headers: {
-            "Accept": "application/json",                
+            "Accept": "application/json",
             "Primal-App-Key": CONFIG.primalAPI.PRIMAL_APP_KEY,
             "Primal-App-ID": CONFIG.primalAPI.PRIMAL_APP_ID,
             "Authorization": CONFIG.primalAPI.AUTHORIZATION
@@ -38,7 +38,7 @@ primalAPI = rest.service(
             queryStrings[formattedMessage.type] = formattedMessage.message;
             if(site)
               queryStrings['site'] = site;
-            
+
             this.get(CONFIG.RECOMMENDATIONS.URL, {"query": queryStrings}).on("success", function(data, response) {
                 var cards = [];
                 for (var i = 0; i < data["@graph"].length; i++) {
@@ -53,26 +53,27 @@ primalAPI = rest.service(
                 onFail(response.rawEncoded);
             });
         },
-        
+
         /**
          * Api call to primal consumer interests data
          *
          * @param {string} message The message to query for interests data
+         * @param {object} params The parameters for the interests data api call
          * @param {function} onSuccess The function to call on success
          * @param {function} onFail The function to call on fail
          */
-        interestsData: function(message, onSuccess, onFail) {
+        interestsData: function(message, params, onSuccess, onFail) {
             var formattedMessage = _formatMessage(message);
-            var queryStrings = JSON.parse(JSON.stringify(CONFIG.INTERESTS_DATA.PARAMS));
-            queryStrings[formattedMessage.type] = formattedMessage.message;
-            
-            this.get(CONFIG.INTERESTS_DATA.URL, {"query": queryStrings}).on("success", function(data, response) {
+            _stripEmptyProperties(params);
+            params[formattedMessage.type] = formattedMessage.message;
+
+            this.get(CONFIG.EXTRACTION.URL, {"query": params}).on("success", function(data, response) {
                 onSuccess(data);
             }).on("fail", function(data, response) {
                 onFail(response.rawEncoded);
             });
         },
-        
+
         /**
          * Api call to primal extraction
          *
@@ -85,7 +86,7 @@ primalAPI = rest.service(
             var formattedMessage = _formatMessage(message);
             _stripEmptyProperties(params);
             params[formattedMessage.type] = formattedMessage.message;
-            
+
             this.get(CONFIG.EXTRACTION.URL, {"query": params}).on("success", function(data, response) {
                 onSuccess(data);
             }).on("fail", function(data, response) {
@@ -99,7 +100,7 @@ primalAPI = rest.service(
  * Checks if the given message is a url or query
  *
  * @param {string} message The string to format as url or query
- * @return {object} formattedMessage An object with a formatted message in message 
+ * @return {object} formattedMessage An object with a formatted message in message
  *                                   message type in type
  */
 function _formatMessage(message) {
@@ -111,6 +112,11 @@ function _formatMessage(message) {
     }
 }
 
+/**
+ * Strips any properties off of parameters if they are empty
+ *
+ * @param {object} params The object to remove properties from
+ */
 function _stripEmptyProperties(params) {
     for (var prop in params) {
         if (params.hasOwnProperty(prop) && params[prop] === '') {
