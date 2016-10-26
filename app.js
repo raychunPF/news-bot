@@ -1,14 +1,16 @@
 // =========================================================
 // Imports
 // =========================================================
+var jsonld = require('jsonld');
 var konphyg = require('konphyg')(__dirname + '/config');
 global.config = konphyg('app');
 var restify = require('restify');
 var builder = require('botbuilder');
 var primalAPI = require('./primalAPI.js').primalAPI
+
 var scraper = require('./utils/imageScraper.js');
 var general = require("./utils/general.js");
-var jsonld = require('jsonld');
+var cardBuilder = require('./utils/cardbuilder.js');
 
 // =========================================================
 // Static Variables
@@ -72,35 +74,16 @@ bot.dialog("/action", [
         session.sendTyping();
         primalAPI.recommendations(query, null, function(content) {
             session.beginDialog("/respondWithContent", content);
-        }, function(errorMessage) {
-            console.log(errorMessage);
-        });
+        }, function(errorMessage) { console.log(errorMessage); });
     }
 ]);
 
 bot.dialog('/respondWithContent', [
     function(session, results) {
-        scraper.addPreviewImages(results, function(content) {
-            var prettyCards = [];
-            for (var i = 0; i < content.length; i++) {
-                var item = content[i];
-                prettyCards.push(
-                    new builder.HeroCard(session)
-                        .title(item["title"])
-                        .subtitle(item["publisher"])
-                        .text(item["description"])
-                        .images([ builder.CardImage.create(session, item["image"]) ])
-                        .tap(builder.CardAction.openUrl(session, decodeURI(item["url"]), item["publisher"]))
-                );
-            }
-            var msg = new builder.Message(session)
-                .attachmentLayout(builder.AttachmentLayout.list)
-                .attachments(prettyCards);
-
-            session.endDialog(msg);
-        }, function(errorMessage) {
-            console.log(errorMessage);
-        });
+        scraper.addPreviewImages(results, function(content) { 
+              var msg = cardBuilder.buildList(session, content); 
+              session.endDialog(msg);
+          }, function(errorMessage) { console.log(errorMessage); });
     }
 ]);
 
@@ -150,17 +133,13 @@ bot.dialog("/updateParameters", [
             var apiParams = api[results.response.entity].params;
             apiParams = JSON.parse(JSON.stringify(CONFIG[apiParams].PARAMS));
             builder.Prompts.choice(session, "Which parameter do you want to change", apiParams);
-        } else {
-            session.endDialog("Error: No api choice found");
-        }
+        } else { session.endDialog("Error: No api choice found"); }
     },
     function(session, results) {
         if (results.response) {
             session.dialogData["param"] = results.response.entity;
             builder.Prompts.text(session, "Enter a value for " + results.response.entity + ":");
-        } else {
-            session.endDialog("Error: No parameter choice found");
-        }
+        } else { session.endDialog("Error: No parameter choice found"); }
     },
     function (session, results) {
         if (results.response) {
