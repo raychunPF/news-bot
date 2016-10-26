@@ -28,14 +28,9 @@ exports.addPreviewImages = function(recommendedContent, onSuccess, onFail) {
                 item["image"] = imageUrl;
                 callback(null, item);
             }, function(errorMessage) { onFail(errorMessage); });
-        } else {
-            callback(null, item);
-        }
+        } else { callback(null, item); }
     }, function(error, items) {
-        if (error) {
-            onFail(err);
-        } else {
-            onSuccess(items);
-        }
+        if (error) { onFail(err); } 
+        else { onSuccess(items); }
     });
 }
