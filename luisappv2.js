@@ -7,6 +7,7 @@ var restify = require('restify');
 var builder = require('botbuilder');
 var PrimalAPI = require('./primalAPI.js').primalAPI
 var scraper = require('./utils/imageScraper.js');
+var cardBuilder = require('./utils/cardbuilder.js');
 
 // =========================================================
 // Static Variables
@@ -51,7 +52,6 @@ dialog.matches('ValidQuery', [
         // Resolve and store any entities passed from LUIS.
         var title = builder.EntityRecognizer.findEntity(args.entities, 'Subject');
         // var time = builder.EntityRecognizer.resolveTime(args.entities);
-        console.log(title);
         session.send("Hey I heard you ask for stuff about: %s", title.entity);
         session.sendTyping();
         PrimalAPI.recommendations(title.entity, null, function(content) {
@@ -64,25 +64,9 @@ dialog.onDefault(builder.DialogAction.send("InvalidQuery"));
 
 bot.dialog('/respondWithContent', [
     function(session, results) {
-        console.log(results);
-        scraper.addPreviewImages(results, function(content) {
-            var prettyCards = [];
-            for (var i = 0; i < content.length; i++) {
-                var item = content[i];
-                prettyCards.push(
-                    new builder.HeroCard(session)
-                        .title(item["title"])
-                        .subtitle(item["publisher"])
-                        .text(item["description"])
-                        .images([ builder.CardImage.create(session, item["image"]) ])
-                        .tap(builder.CardAction.openUrl(session, decodeURI(item["url"]), item["publisher"]))
-                );
-            }
-            var msg = new builder.Message(session)
-                .attachmentLayout(builder.AttachmentLayout.list)
-                .attachments(prettyCards);
-            
-            session.endDialog(msg);
-        }, function() {console.log("err"); });
+        scraper.addPreviewImages(results, function(content) { 
+              var msg = cardBuilder.buildList(session, content); 
+              session.endDialog(msg);
+          }, function(errorMessage) { console.log(errorMessage); });
     }
 ]);
