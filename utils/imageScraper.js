@@ -26,8 +26,16 @@ exports.addPreviewImages = function(recommendedContent, onSuccess, onFail) {
         if(!item["image"]) {
             exports.getPreviewImage(item["url"], function(imageUrl) {
                 item["image"] = imageUrl;
-                callback(null, [item]);
+                callback(null, item);
             }, function(errorMessage) { onFail(errorMessage); });
+        } else {
+            callback(null, item);
         }
-    }, function(error, recommendedContent) { onSuccess(recommendedContent); });
+    }, function(error, items) {
+        if (error) {
+            onFail(err);
+        } else {
+            onSuccess(items);
+        }
+    });
 }
