@@ -10,7 +10,7 @@ var CONFIG = global.config;
  * @return {boolean} isUrl Indicates if the string is a url
  */
 exports.isUrl = function(url) {
-    var urlPattern = /^((http|https|ftp):\/\/)/;
+    var urlPattern = /^((http|https|ftp):\/\/)|^(www)/;
     var isUrl = urlPattern.test(url);
 
     return isUrl;

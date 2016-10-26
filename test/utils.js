@@ -11,8 +11,20 @@ var generalUtils = require("../utils/general.js");
 
 describe("Primal Utility Methods", function() {
     describe("Testing general utility methods", function() {
-        it("should indicate if url", function() {
+        it("should tell if a string beginning in http is an url", function() {
             var url = "http://stackoverflow.com/";
+
+            generalUtils.isUrl(url).should.be.true;
+        });
+        
+        it("should tell if a string beginning in https is an url", function() {
+            var url = "https://stackoverflow.com/";
+
+            generalUtils.isUrl(url).should.be.true;
+        });
+        
+        it("should tell if a string beginning in www is an url", function() {
+            var url = "www.stackoverflow.com/";
 
             generalUtils.isUrl(url).should.be.true;
         });
@@ -24,6 +36,9 @@ describe("Primal Utility Methods", function() {
             };
 
             var copy = generalUtils.copyObject(object);
+            object["prop1"] = "wrong";
+            object["prop2"] = "wrong";
+            
             copy.should.have.property("prop1", "one");
             copy.should.have.property("prop2", "two");
         });
