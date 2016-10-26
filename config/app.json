@@ -11,17 +11,7 @@
     "RECOMMENDATIONS": {
         "URL": "https://api.primal.com/v2/recommendations",
         "PARAMS": {
-            "maxContentItems": "",
-            "minContentScore": "",
-            "types": "",
-            "contentSources": "",
-            "contentCollections": "",
-            "cssSelector": "",
-            "site": "",
-            "sort": "",
-            "cache": "",
-            "uid": "",
-            "useContext": ""
+            "maxContentItems": 5
         }
     },
 
